@@ -5,10 +5,9 @@ class Index extends LH_Controller {
 	public function __construct() {
 		parent::__construct();
 		
-		$this->odab_view->set_frame('index');
-		// $this->odab_view->set_partial('header', 'modules/header');
-		// $this->odab_view->set_partial('tabmenu', 'modules/tabmenu');
-		// $this->odab_view->set_partial('footer', 'modules/footer');
+		$this->lh_view->set_frame('index');
+		$this->lh_view->set_partial('header', 'modules/header');
+		$this->lh_view->set_partial('footer', 'modules/footer');
 	}
 	
 	public function index()
@@ -16,8 +15,8 @@ class Index extends LH_Controller {
 		// $init = '/questions/exam/'.get_latest_exam().'-국어A';
 		// redirect($init, 'location');
 		// return;
-		// $this->odab_view->set_partial('content', 'home');
-		// $this->odab_view->render();
+		$this->lh_view->set_partial('body', 'main');
+		$this->lh_view->render();
 	}
 	
 	public function about() {

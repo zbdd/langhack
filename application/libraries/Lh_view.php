@@ -4,7 +4,7 @@ class Lh_view {
 	private $frame_path = 'frame';
 	private $partial_path = 'partial';
 	private $values = array();
-	private $frame = 'default';
+	private $frame = 'index';
 	private $partials = array();
 
 	public function __construct() {  }
