@@ -13,22 +13,17 @@
     <div class="collapse navbar-collapse navbar-ex1-collapse">
       <ul class="nav navbar-nav">
         <li>
-          <a href="#about">About</a>
+          <a href="/about">About</a>
         </li>
         <li>
-          <a href="#services">Services</a>
+          <a href="/search">Search</a>
         </li>
         <li>
-          <a href="#contact">Contact</a>
+          <a href="#">Chat</a>
         </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        <li>
-          <button type="button" class="btn btn-primary navbar-btn">Sign Up With Facebook</button>
-        </li>
-        <li>
-          <a href="#">Sign In</a>
-        </li>
+      <?php if ($this->lh_user->get('id')): ?>
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <b class="caret"></b></a>
           <ul class="dropdown-menu">
@@ -39,6 +34,14 @@
             <li><a href="#">Separated link</a></li>
           </ul>
         </li>
+      <?php else: ?>
+        <li>
+          <button type="button" class="btn btn-primary navbar-btn">Sign Up With Facebook</button>
+        </li>
+        <li>
+          <a href="#">Sign In</a>
+        </li>
+      <?php endif; ?>
       </ul>
     </div>
     <!-- /.navbar-collapse -->

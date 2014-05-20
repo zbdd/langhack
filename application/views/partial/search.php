@@ -1,5 +1,22 @@
 <div class="row">
-  <div class="col-md-12">
+  <div class="col-md-3">
+    <p class="lead">Languages</p>
+    <div class="list-group">
+      <a href="#" class="list-group-item">Korean</a>
+      <a href="#" class="list-group-item">English</a>
+      <a href="#" class="list-group-item">Chinese</a>
+    </div>
+  </div>
+  <div class="col-md-9">
+  	<div class="row">
+  		<div class="col-sm-1 col-lg-1 col-md-1"></div>
+  		<div class="col-sm-10 col-lg-10 col-md-10">
+  			<div class="google-maps">
+  				<iframe src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d3162.4947541079814!2d127.0096782010498!3d37.566965872791236!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x357ca33ce3e03fb9%3A0x831abf7f621c7999!2z64-Z64yA66y465SU7J6Q7J247ZSM65287J6Q!5e0!3m2!1sko!2s!4v1400615346917" width="600" height="450" frameborder="0" style="border:0"></iframe>
+  			</div>
+  		</div>
+  		<div class="col-sm-1 col-lg-1 col-md-1"></div>
+  	</div>
     <div class="row">
       <div class="col-sm-4 col-lg-4 col-md-4">
         <div class="thumbnail">
@@ -106,12 +123,6 @@
             </p>
           </div>
         </div>
-      </div>
-      <div class="col-sm-4 col-lg-4 col-md-4">
-        <h4><a href="#">Like this template?</a>
-        </h4>
-        <p>If you like this template, then check out <a target="_blank" href="http://maxoffsky.com/code-blog/laravel-shop-tutorial-1-building-a-review-system/">this tutorial</a> on how to build a working review system for your online store!</p>
-        <a class="btn btn-primary" target="_blank" href="http://maxoffsky.com/code-blog/laravel-shop-tutorial-1-building-a-review-system/">View Tutorial</a>
       </div>
     </div>
   </div>
