@@ -42,6 +42,7 @@ $route['default_controller'] = "index";
 $route['404_override'] = '';
 
 $route['about'] = 'index/about';
+$route['login'] = 'authenticate/login';
 #$route['questions/(:any)/(:num)'] = 'questions/single/$1/$2';
 
 

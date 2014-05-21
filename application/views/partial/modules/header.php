@@ -39,7 +39,7 @@
           <button type="button" class="btn btn-primary navbar-btn">Sign Up With Facebook</button>
         </li>
         <li>
-          <a href="#">Sign In</a>
+          <a href="/login">Sign In</a>
         </li>
       <?php endif; ?>
       </ul>

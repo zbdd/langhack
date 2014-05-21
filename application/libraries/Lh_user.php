@@ -86,19 +86,19 @@ class Lh_user {
 	}
 	
 	public function get($key) {
-		// return ($value = $this->CI->session->userdata($key)) ? $value : '';
+		return ($value = $this->CI->session->userdata($key)) ? $value : '';
 	}
 	
 	public function set($key, $value = null) {
-		// return $this->CI->session->set_userdata($key, $value);
+		return $this->CI->session->set_userdata($key, $value);
 	}
 	
 	public function set_flashdata($key, $value = null) {
-		// return $this->CI->session->set_flashdata($key, $value);
+		return $this->CI->session->set_flashdata($key, $value);
 	}
 	
 	public function delete($key) {
-		// return $this->CI->session->unset_userdata($key);
+		return $this->CI->session->unset_userdata($key);
 	}
 
 	public function get_profile_image($user_id = null) {
