@@ -13,10 +13,10 @@
     <div class="collapse navbar-collapse navbar-ex1-collapse">
       <ul class="nav navbar-nav">
         <li>
-          <a href="/about">About</a>
+          <a href="<?php echo base_url('about'); ?>">About</a>
         </li>
         <li>
-          <a href="/search">Search</a>
+          <a href="<?php echo base_url('search'); ?>">Search</a>
         </li>
         <li>
           <a href="#">Chat</a>
@@ -39,7 +39,7 @@
           <button type="button" class="btn btn-primary navbar-btn">Sign Up With Facebook</button>
         </li>
         <li>
-          <a href="/login">Sign In</a>
+          <a href="<?php echo base_url('login'); ?>">Sign In</a>
         </li>
       <?php endif; ?>
       </ul>
