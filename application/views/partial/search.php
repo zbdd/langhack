@@ -1,8 +1,122 @@
+<script src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
+  <script>
+  var map;
+  var map_indoor;
+  var markers = new Array();
+  var marker = null;
+
+  function displayMap(){
+    var initialLocation = new google.maps.LatLng(-31.953004,115.857469);
+    
+
+    var myOptions = {
+        zoom: 15,
+        center: initialLocation,
+        mapTypeControl: true,
+        panControl: true,
+        zoomControl: true,
+        scaleControl: true,
+        streetViewControl: true,
+        overviewMapControl: true,
+      mapTypeControlOptions: {style: google.maps.MapTypeControlStyle.DROPDOWN_MENU},
+        mapTypeId: google.maps.MapTypeId.ROADMAP
+      };
+
+      map = new google.maps.Map(document.getElementById("testmaps"), myOptions);
+
+      // Try HTML5 Geolocation (Preferred)
+
+    if(navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(function(position) {
+          initialLocation = new google.maps.LatLng(position.coords.latitude,position.coords.longitude);
+          map.setCenter(initialLocation);
+          //  addMarker(initialLocation);
+          drawCircle(initialLocation, 100);
+          
+      }, function() { handleNoGeolocation(true);
+      });
+    }
+    else { // Browser doesn't support Geolocation
+      handleNoGeolocation(false);
+    }
+
+    function clearOverlays() {
+    for(var i = 0; i < markers.length; i++) {
+          markers[i].setMap(null);
+        }
+  }                                                                                                    
+
+  function drawCircle(location, rad) { 
+      markers.push(new google.maps.Circle({
+          center: location,
+          //icon: '../person.png',
+          radius: parseInt(rad),
+          //strokeColor: "#76EE00",
+          strokeOpacity: 0.7,
+          strokeWeight: 2,
+          //fillColor: "#76EE00",
+          fillColor: getRandomColor(),
+          fillOpacity: 0.35,
+          map: map
+      }));
+      
+  }
+
+    function handleNoGeolocation(errorFlag) {
+      if (errorFlag == true) {
+          //alert("Geolocation service failed. We've placed you in Perth.");
+          initialLocation = new google.maps.LatLng(-31.953004,115.857469);;
+      } else {
+          alert("Your browser doesn't support geolocation. We've placed you in Perth.");
+          initialLocation = new google.maps.LatLng(-31.953004,115.857469);;
+      }
+      map.setCenter(initialLocation);
+    }
+
+    google.maps.event.addListener(map, 'rightclick', function(event) {
+      //TODO REMOVE THIS WHEN WE IMPLEMENT MULTIPLE GEONODES PER GEOFENCE
+      //clearOverlays();
+      var latLng = event.latLng;
+      var rad = 100;
+
+      drawCircle(latLng, rad);
+    });
+
+    function getRandomColor() {
+    var letters = '0123456789ABCDEF'.split('');
+    var color = '#';
+    for (var i = 0; i < 6; i++ ) {
+        color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+}
+//#FF0000 CHINESE
+////#33CC33 KOREAN
+//AUSSIE #0000FF
+  var index =0;
+
+  document.getElementById('search_korean').addEventListener('click', function(event) {
+    $.ajax({
+      type:"GET", url:"search/load", data:{},
+      success: function(response) {
+        console.log(response);
+        for(index = 0; index < response.length; index++) {
+          var location = new google.maps.LatLng(response[index]['latitude'], response[index]['longitude']);
+          drawCircle(location, 100);
+        }
+      }
+    });
+  });
+}
+  </script>
+  
+
+ 
 <div class="row">
   <div class="col-md-3">
     <p class="lead">Languages</p>
     <div class="list-group">
-      <a href="#" class="list-group-item">Korean</a>
+      <a href="#" id="search_korean" name="search_korean" class="list-group-item">Korean</a>
       <a href="#" class="list-group-item">English</a>
       <a href="#" class="list-group-item">Chinese</a>
     </div>
@@ -11,8 +125,9 @@
   	<div class="row">
   		<div class="col-sm-1 col-lg-1 col-md-1"></div>
   		<div class="col-sm-10 col-lg-10 col-md-10">
-  			<div class="google-maps">
-  				<iframe src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d3162.4947541079814!2d127.0096782010498!3d37.566965872791236!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x357ca33ce3e03fb9%3A0x831abf7f621c7999!2z64-Z64yA66y465SU7J6Q7J247ZSM65287J6Q!5e0!3m2!1sko!2s!4v1400615346917" width="600" height="450" frameborder="0" style="border:0"></iframe>
+  			<div id="testmaps" class="google-maps" style="height:400px">
+          <iframe src="" onload="displayMap()"></iframe>
+  				
   			</div>
   		</div>
   		<div class="col-sm-1 col-lg-1 col-md-1"></div>

@@ -10,9 +10,10 @@
   <link href="<?php echo base_url('static/css/bootstrap.css'); ?>" rel="stylesheet">
   <!-- Add custom CSS here -->
   <link href="<?php echo base_url('static/css/common.css'); ?>" rel="stylesheet">
+
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 </head>
 <body>
-
   <?php echo $partial_header; ?>
   
   <div class="container">

@@ -16,6 +16,20 @@ class Search extends LH_Controller {
 		$this->lh_view->render();
 	}
 
+	public function load() {
+		// $query = $this->User_model->query("SELECT * FROM Users");
+		// json_encode($query);
+
+		$users = array();
+		foreach($this->User_model->find() as $user) {
+			$users[] = $user;
+		}
+
+		$this->output->set_content_type('application/json');
+		$this->output->set_output(json_encode($users));
+		return;
+	}
+
 }
 
 /* End of file search.php */
