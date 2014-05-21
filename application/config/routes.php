@@ -42,8 +42,9 @@ $route['default_controller'] = "index";
 $route['404_override'] = '';
 
 $route['about'] = 'index/about';
+$route['signup'] = 'authenticate/signup';
 $route['login'] = 'authenticate/login';
-#$route['questions/(:any)/(:num)'] = 'questions/single/$1/$2';
+#$route['foo/(:any)/(:num)'] = 'bar/$1/$2';
 
 
 /* End of file routes.php */

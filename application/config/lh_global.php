@@ -9,7 +9,8 @@
 $config['help_mail']			= 'help@langhack.me';
 
 /* paths */
-$config['static_path']			= '/static/';
+$config['static_path']			= 'static';
+$config['img_path']				= 'static/img';
 
 /* predefined uri */
 $config['predefined'] = array(

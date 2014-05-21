@@ -39,7 +39,7 @@
           <button type="button" class="btn btn-primary navbar-btn">Sign Up With Facebook</button>
         </li>
         <li>
-          <a href="<?php echo base_url('login'); ?>">Sign In</a>
+          <a href="<?php echo base_url('signup'); ?>">Sign Up</a>
         </li>
       <?php endif; ?>
       </ul>

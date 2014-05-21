@@ -88,66 +88,16 @@ class Lh_authenticate {
 	
 	public function signup_login($email) {
 		if (empty($email)) return false;
-		if ($result = $this->CI->User_model->with('type_codes', 'type_code_id')->columns('users.*, type_codes.key AS type_code_key')->find_one(array('users.email' => $email, 'users.status' => 'Y'))) {
+		if ($result = $this->CI->User_model->columns('users.*')->find_one(array('users.email' => $email))) {
 			$this->CI->odab_user->set(array(
 				'id'			=> $result->id,
-				'type_code_key'	=> $result->type_code_key,
 				'email' 		=> $result->email,
-				'nickname'		=> $result->nickname,
-				'bio'			=> $result->bio,
-				'mypage_url'	=> $result->mypage_url
+				'firstname'		=> $result->firstname,
+				'lastname'		=> $result->lastname
 			));
 			$this->update_last_login($result->id);
 			return true;
 		} else {
-			return false;
-		}
-	}
-	
-	/**
-	 * 비밀번호 분실시 간접 로그인
-	 * 
-	 * 히든 패스워드로 한번 로그인을 수행함 수행후 히든 패스 변경
-	 * 
-	 * @access	public
-	 * @param	string	사용자 입력 이메일
-	 * @param	string	비밀번호
-	 * @return	boolean
-	 */
-	public function login_hidden_pw($idx,$hidden_pw) {
-				
-		//if($this->CI->otd_user->get('id') != 1) return false;
-		
-		
-		if($result = $this->CI->User_model->with('type_codes', 'type_code_id')->columns('users.*, type_codes.key AS type_code_key, type_codes.name AS type_code_name')->find_one(array('users.id' => $idx, 'users.status' => 'Y'))) {
-			$this->CI->output->append_output("testtest");
-			
-			if($result->hidden_pw == $hidden_pw) {
-				$this->CI->otd_user->set(array(
-					'id' => $result->id,
-					'type_code_key' => $result->type_code_key,
-					'email' => $result->email
-				));
-				$this->CI->otd_user->delete('password');
-				
-				// update last login time
-				$this->update_last_login($result->id);
-
-				return true;
-			} else {
-				$this->CI->otd_user->set(array(
-					'id' => 1
-				));
-				$this->CI->otd_user->delete(array_keys(array('email', 'password')));
-				
-				return false;
-			}			
-		} else {
-			$this->CI->otd_user->set(array(
-				'id' => 1
-			));
-			$this->CI->otd_user->delete(array_keys(array('email', 'password')));
-			
 			return false;
 		}
 	}
@@ -163,10 +113,6 @@ class Lh_authenticate {
 	 */		
 	public function update_last_login($user_id) {
 		return $this->CI->User_model->update(array('last_login_at' => date('Y-m-d H:i:s')), array('id' => $user_id));
-	}
-	
-	public function update_status($user_id) {
-		return $this->CI->User_model->update(array('status' => 'Y'), array('id' => $user_id));
 	}
 	
 	/**

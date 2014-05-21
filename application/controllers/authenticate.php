@@ -46,203 +46,107 @@ class Authenticate extends CI_Controller {
 	public function oauth_facebook() {
 		$this->load->library('lh_oauth');
 		$oauth_user = $this->lh_oauth->user;
-		//var_dump($oauth_user);
+		// var_dump($oauth_user);
+		// return;
 		if ($oauth_user) {
 			if ($this->User_model->is_exists(array('email' => $oauth_user['email']))) {
 				if ($this->lh_authenticate->signup_login($oauth_user['email'])) {
 					redirect('/');
 				} else {
-					redirect('/login');
+					redirect('/err');
 				}
 			} else {
 				// 프로필 사진 저장
 				$fb_img = file_get_contents('https://graph.facebook.com/'.$oauth_user['id'].'/picture?width=160&height=160');
-				$upload_path = $this->config->item('upload_path') . '/' . date('Ymd');
-				if (!is_really_writable($upload_path))
-					mkdir($upload_path);
-				$fb_file = $upload_path .'/'. md5($oauth_user['id']) . '.jpg';
+				$upload_path = $this->config->item('img_path');
+				// if (!is_really_writable($upload_path))
+				// 	mkdir($upload_path);
+				$fb_file = $_SERVER['DOCUMENT_ROOT'].$upload_path .'/'. md5($oauth_user['id']) . '.jpg';
 				file_put_contents($fb_file, $fb_img);
 				// 회원가입 이어서 진행
 				$userdata = array(
 					'user_email' 	=> $oauth_user['email'],
-					'user_name' 	=> $oauth_user['name'],
-					'user_profile'	=> str_replace($_SERVER['DOCUMENT_ROOT'], '', $fb_file),
-					'user_desc'		=> isset($oauth_user['bio']) ? $oauth_user['bio'] : null,
-					//'user_quote'	=> isset($oauth_user['quotes']) ? $oauth_user['quotes'] : null,
-					'user_mypage'	=> $oauth_user['username']
+					'user_fname' 	=> $oauth_user['first_name'],
+					'user_lname'	=> $oauth_user['last_name'],
+					'user_profile'	=> str_replace($_SERVER['DOCUMENT_ROOT'], '', $fb_file)
 				);
-				$subjects = array();
-				$this->load->model('Subject_model');
-				$subs = $this->Subject_model->with('type_codes', 'type_code_id')->columns('subjects.id, subjects.name, subjects.slug, subjects.parent_id')->find(array('type_codes.reference' => 'subjects', 'type_codes.key' => 'subject_new'));
-				foreach ($subs as $sub) {
-					if ($sub->parent_id == 29) {
-						$subjects['korean'][] = $sub;
-					} else if ($sub->parent_id == 30) {
-						$subjects['math'][] = $sub;
-					} else if ($sub->parent_id == 31) {
-						$subjects['english'][] = $sub;
-					} else if ($sub->parent_id == 32) {
-						$subjects['science'][] = $sub;
-					} else {
-						$subjects['society'][] = $sub;
-					}
-				}
 				$this->lh_view->set_value(array(
-					'head_title'	=> '회원가입',
+					'head_title'	=> 'Register',
 					'type'			=> 'oauth',
 					'userdata'		=> $userdata,
-					'subjects'		=> $subjects,
-					'no_profile'	=> '/static/uploads/avatar.png'
+					'no_profile'	=> '/static/img/avatar.png'
 				));
-				$this->lh_view->set_partial('content', 'modules/signup');
+				$this->lh_view->set_partial('body', 'modules/signup');
 				$this->lh_view->render();
 				return;
 			}
 		} else {
-			redirect('/login');
+			redirect('/blah2');
 		}
 	}
 	
 	public function signup() {
 		if ($this->input->post()) {
-			$this->load->library('form_validation');
-			//$this->form_validation->set_error_delimiters('<span class="error">', '</span>');
-			$this->form_validation->set_error_delimiters('', '');
-			$this->form_validation->set_message('required', '필수항목입니다');
-			$this->form_validation->set_message('valid_email', '올바른 주소를 입력하세요');
-			$this->form_validation->set_message('min_length', '<span class="hidden">%s</span>%s자 이상 입력하세요');
-			$this->form_validation->set_message('max_length', '<span class="hidden">%s</span>%s자를 넘을 수 없습니다');
-			$this->form_validation->set_message('alpha_numeric', '영문자와 숫자의 조합만 가능합니다');
-			$this->form_validation->set_message('matches', '<span class="hidden">%s</span>%s 값과 일치하지 않습니다');
-			//$this->form_validation->set_rules('email', '이메일', 'required|valid_email');
-			$this->form_validation->set_rules('email', '이메일', 'callback_check_email');
-			$this->form_validation->set_rules('nickname', '이름', 'trim|required|min_length[2]|max_length[10]|xss_clean');
-			//$this->form_validation->set_rules('mypage', '프로필 주소', 'trim|required|alpha_numeric|max_length[20]');
-			$this->form_validation->set_rules('mypage', '프로필 주소', 'callback_check_mypage');
-			$this->form_validation->set_rules('bio', '한줄 소개', 'required|max_length[20]|xss_clean');
+			// 타입
+			$this->load->model('Type_code_model');
+			$type_code_id = $this->Type_code_model->find_one(array('reference' => 'users', 'key' => $this->input->post('type_code_key')))->id;
+			// 비밀번호
+			if (!function_exists('password_hash')) $this->load->helper('password');
 			if ($this->input->post('type') === 'email') {
-				$this->form_validation->set_rules('password', '비밀번호', 'required|min_length[6]|max_length[30]|xss_clean');
-			}
-			$this->form_validation->set_rules('subject-korean', '국어 영역', 'required');
-			$this->form_validation->set_rules('subject-math', '수학 영역', 'required');
-			$this->form_validation->set_rules('subject-english', '영어 영역', 'required');
-			$this->form_validation->set_rules('subject-select', '사회/과학탐구 영역', 'required');
-			
-			if ($this->form_validation->run() === false) {
-				$results = array(
-					'result'	=> false,
-					'message'	=> array(
-						'email'		=> form_error('email'),
-						'nickname'	=> form_error('nickname'),
-						'password'	=> form_error('password'),
-						'mypage'	=> form_error('mypage'),
-						'bio'		=> form_error('bio'),
-						'sub-kor'	=> form_error('subject-korean'),
-						'sub-mat'	=> form_error('subject-math'),
-						'sub-eng'	=> form_error('subject-english'),
-						'sub-sel'	=> form_error('subject-select')
-					)
-				);
-				$this->output->set_content_type('application/json');
-				$this->output->set_output(json_encode($results));
-				return;
+				$hash = password_hash($this->input->post('password'), PASSWORD_BCRYPT);
 			} else {
-				// 타입
-				$this->load->model('Type_code_model');
-				$type_code_id = $this->Type_code_model->find_one(array('reference' => 'users', 'key' => $this->input->post('type_code_key')))->id;
-				// 비밀번호
-				if (!function_exists('password_hash')) $this->load->helper('password');
-				if ($this->input->post('type') === 'email') {
-					$hash = password_hash($this->input->post('password'), PASSWORD_BCRYPT);
-				} else {
-					$hash = password_hash(md5(time().rand()), PASSWORD_BCRYPT); // 소셜로그인은 비밀번호가 의미가 없고, 임시로 난수를 할당한다
-				}
-				// 과목선택
-				$subject_option = implode('|', array(
-					$this->input->post('subject-korean'),
-					$this->input->post('subject-math'),
-					$this->input->post('subject-english'),
-					$this->input->post('subject-select')
-				));
-				$description = ($this->input->post('description')) ? $this->input->post('description') : '';
-				$facebook_link = ($this->input->post('facebook_link')) ? $this->input->post('facebook_link') : '';
-        // $profile_image = str_replace('http://www.lh.net', '', $this->input->post('profile'));
-				$profile_image = str_replace($this->config->item('img_path').'/', '', $profile_image);
-				$userdata = array(
-					'type_code_id'	=> $type_code_id,
-					'email'			=> $this->input->post('email'),
-					'password'		=> $hash,
-					'nickname'		=> $this->input->post('nickname'),
-					'mypage_url'	=> $this->input->post('mypage'),
-					'bio'			=> $this->input->post('bio'),
-					'status'		=> 'Y', // 'N'
-					// 메타데이터
-					'profile_image'	=> $profile_image,
-					'subject_option'=> $subject_option,
-					'auto_creation'	=> 'Y',
-					'description'	=> $description,
-					'facebook_link' => $facebook_link
-				);
-				
-				if ($this->lh_user->add($userdata)) {
-					// TODO send validation email
-					$this->lh_authenticate->signup_login($this->input->post('email'));
-					$results = array(
-						'result' => true,
-						'name' => $this->input->post('nickname')
-					);
-				} else {
-					$results = array(
-						'result' => false,
-						'message' => array('save' => '회원가입 중 문제가 발생했습니다. 다시 시도해 주세요.')
-					);
-				}
-				$this->output->set_content_type('application/json');
-				$this->output->set_output(json_encode($results));
-				return;
+				$hash = password_hash(md5(time().rand()), PASSWORD_BCRYPT); // 소셜로그인은 비밀번호가 의미가 없고, 임시로 난수를 할당한다
 			}
-		}
-		
-		$option = $this->input->get('o');
-		switch($option) {
-			case 'facebook':
-				$this->load->library('lh_oauth');
-				$data = array(
-					'redirect_uri' => site_url('authenticate/oauth_facebook'),
-					'scope' => 'email'
+			// 과목선택
+			$subject_option = implode('|', array(
+				$this->input->post('subject-korean'),
+				$this->input->post('subject-math'),
+				$this->input->post('subject-english'),
+				$this->input->post('subject-select')
+			));
+			$description = ($this->input->post('description')) ? $this->input->post('description') : '';
+			$facebook_link = ($this->input->post('facebook_link')) ? $this->input->post('facebook_link') : '';
+    // $profile_image = str_replace('http://www.lh.net', '', $this->input->post('profile'));
+			$profile_image = str_replace($this->config->item('img_path').'/', '', $profile_image);
+			$userdata = array(
+				'type_code_id'	=> $type_code_id,
+				'email'			=> $this->input->post('email'),
+				'password'		=> $hash,
+				'nickname'		=> $this->input->post('nickname'),
+				'mypage_url'	=> $this->input->post('mypage'),
+				'bio'			=> $this->input->post('bio'),
+				'status'		=> 'Y', // 'N'
+				// 메타데이터
+				'profile_image'	=> $profile_image,
+				'subject_option'=> $subject_option,
+				'auto_creation'	=> 'Y',
+				'description'	=> $description,
+				'facebook_link' => $facebook_link
+			);
+			
+			if ($this->lh_user->add($userdata)) {
+				// TODO send validation email
+				$this->lh_authenticate->signup_login($this->input->post('email'));
+				$results = array(
+					'result' => true,
+					'name' => $this->input->post('nickname')
 				);
-				redirect($this->lh_oauth->getLoginUrl($data));
-				break;
-			case 'google':
-				break;
-			case 'email':
-			default:
-				$subjects = array();
-				$this->load->model('Subject_model');
-				$subs = $this->Subject_model->with('type_codes', 'type_code_id')->columns('subjects.id, subjects.name, subjects.slug, subjects.parent_id')->find(array('type_codes.reference' => 'subjects', 'type_codes.key' => 'subject_new'));
-				foreach ($subs as $sub) {
-					if ($sub->parent_id == 29) {
-						$subjects['korean'][] = $sub;
-					} else if ($sub->parent_id == 30) {
-						$subjects['math'][] = $sub;
-					} else if ($sub->parent_id == 31) {
-						$subjects['english'][] = $sub;
-					} else if ($sub->parent_id == 32) {
-						$subjects['science'][] = $sub;
-					} else {
-						$subjects['society'][] = $sub;
-					}
-				}
-				$this->lh_view->set_value(array(
-					'head_title' 	=> '회원가입',
-					'type'			=> 'email',
-					'userdata' 		=> null,
-					'subjects'		=> $subjects,
-					'no_profile'	=> '/static/uploads/avatar.png'
-				));
-				$this->lh_view->set_partial('content', 'modules/signup');
-				$this->lh_view->render();
-				break;
+			} else {
+				$results = array(
+					'result' => false,
+					'message' => array('save' => '회원가입 중 문제가 발생했습니다. 다시 시도해 주세요.')
+				);
+			}
+			$this->output->set_content_type('application/json');
+			$this->output->set_output(json_encode($results));
+			return;
+		} else {
+			$this->load->library('lh_oauth');
+			$data = array(
+				'redirect_uri' => site_url('authenticate/oauth_facebook'),
+				'scope' => 'email'
+			);
+			redirect($this->lh_oauth->getLoginUrl($data));
 		}
 	}
 	public function login() {
@@ -298,99 +202,6 @@ class Authenticate extends CI_Controller {
 	public function logout() {
 		$this->lh_authenticate->logout();
 		redirect('/', 'location');
-	}
-	
-	public function check_email($str) {
-		if (!filter_var($str, FILTER_VALIDATE_EMAIL)) {
-			$this->form_validation->set_message('check_email', '올바른 주소를 입력하세요');
-			return false;
-		} else if ($this->User_model->is_exists(array('email' => $str))) {
-			$this->form_validation->set_message('check_email', '이미 사용중인 주소입니다');
-			return false;
-		} else {
-			return true;
-		}
-	}
-	public function check_mypage($str) {
-		if ($str == '') {
-			$this->form_validation->set_message('check_mypage', '필수항목입니다');
-			return false;
-		} else if (strlen($str) < 3) {
-	    	$this->form_validation->set_message('check_mypage', '3자 이상 입력하세요');
-			return false;
-	    } else if (strlen($str) > 20) {
-	    	$this->form_validation->set_message('check_mypage', '20자를 넘을 수 없습니다');
-			return false;
-	    } else if (!ctype_alnum($str)) {
-			$this->form_validation->set_message('check_mypage', '영문자와 숫자의 조합만 가능합니다');
-			return false;
-	    } else if (in_array($str, $this->config->item('predefined'))) {
-	    	$this->form_validation->set_message('check_mypage', '이미 사용중인 주소입니다');
-			return false;
-	    } else if ($this->User_model->is_exists(array('mypage_url' => $str))) {
-	    	$this->form_validation->set_message('check_mypage', '이미 사용중인 주소입니다');
-			return false;
-	    } else {
-	        return true;
-	    }
-	}
-	
-	private function send_validation_email() {
-		$this->load->library('email');
-		$this->email->initialize(array('mailtype' => 'html', 'protocol' => 'sendmail'));
-		$email = $this->lh_user->get('email');
-		$email_code = $this->email_code;
-		$this->email->from($this->config->item('bot_email'), '오답노트');
-		$this->email->to('akamk87@gmail.com');
-		$this->email->subject('[오답노트] 회원가입 인증 메일입니다.');
-		
-		$message = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-					"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html><head>
-					<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-					</head><body>';
-		$message .= '<p>Thanks for registering on 오답노트! Please <strong><a href="'.base_url().'activate/'.$email.'/'.$email_code.'">Click here</a></strong> to activate your account. After you have activated your account, you will be able to log into to Freight Forum and start doing business!</p>';
-		$message .= '<p>Thank you!</p>';
-		$message .= '</body></html>';
-		
-		$this->email->message($message);
-		$this->email->send();
-		
-		echo $this->email->print_debugger();
-		return;
-	}
-	
-	public function validate_email($email = null, $code = null) {
-		if (empty($email) || empty($code)) return false;
-		$code = trim($code);
-		if ($user = $this->User_model->find_one(array('email' => $email))) {
-			if (md5($user->mypage_url.'!@#'.$user->created_at) === $code) {
-				if ($user->status === 'Y') {
-					$this->lh_view->set_value(array('alert' => '이미 인증된 메일입니다. 다시 로그인해주세요.'));
-					$this->lh_view->set_partial('content', 'modules/error');
-					$this->lh_view->render();
-				} else {
-					if ($this->lh_authenticate->update_status($user->id)) {
-						if ($this->lh_authenticate->signup_login($email)) {
-							redirect('/');
-						} else {
-							redirect('/login');
-						}
-					} else {
-						$this->lh_view->set_value(array('alert' => '인증을 할 수 없습니다. 다시 시도해주세요.'));
-						$this->lh_view->set_partial('content', 'modules/error');
-						$this->lh_view->render();
-					}
-				} 
-			} else {
-				$this->lh_view->set_value(array('alert' => '인증을 할 수 없습니다. 다시 시도해주세요.'));
-				$this->lh_view->set_partial('content', 'modules/error');
-				$this->lh_view->render();
-			}
-		} else {
-			$this->lh_view->set_value(array('alert' => '인증을 할 수 없습니다. 다시 시도해주세요.'));
-			$this->lh_view->set_partial('content', 'modules/error');
-			$this->lh_view->render();
-		}
 	}
 }
 /* EOF */
