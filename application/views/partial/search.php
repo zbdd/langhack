@@ -4,7 +4,9 @@
   var map_indoor;
   var markers = new Array();
   var marker = null;
+  var infoWindow = new Array();
   var response;
+  var counter = 0;
      $.ajax({
       type:"GET", url:"search/load", data:{},
       success: function(responses) {
@@ -68,9 +70,9 @@
           //fillColor: "#76EE00",
           fillColor: colour,
           fillOpacity: 0.35,
-          map: map
+          map: map,
       }));
-      
+       
   }
 
     function handleNoGeolocation(errorFlag) {
@@ -90,7 +92,6 @@
       var latLng = event.latLng;
       var rad = 100;
 
-      drawCircle(latLng, rad);
     });
 
     function getRandomColor() {
@@ -107,6 +108,7 @@
   function loadUsers(toLoad) {
     var index = 0;
     var re;
+    var infowindow;
     if(toLoad == 'Korean') {
       colour = '#33CC33';
       re = new RegExp('Korean', 'g');
@@ -117,13 +119,30 @@
       colour = '#0000FF';
       re = new RegExp('English', 'g');
     }
-    
-      for(index = 0; index < response.length; index++) {
-        if(response[index]['languages'].match(re)) {
-          var location = new google.maps.LatLng(response[index]['latitude'], response[index]['longitude']);
-          drawCircle(location, 100, colour);
-        }
+
+    for(index = 0; index < response.length; index++) {
+      if(response[index]['languages'].match(re)) {
+        console.log(response);
+        var location = new google.maps.LatLng(response[index]['latitude'], response[index]['longitude']);
+        drawCircle(location, 100, colour, response[index]);
+        var contentString = "<div id='content'><h2>"+ response[index]['firstname']+ " " +response[index]['lastname']+"</h2>";
+
+        infoWindow = new google.maps.InfoWindow({
+          content: contentString
+        });
+
+        google.maps.event.addListener(markers[index], 'click', function(ev){
+          console.log(ev);
+
+          infoWindow.setPosition(ev.latLng);
+          infoWindow.open(map);
+        });
+      
+        // google.maps.event.addListener(markers[index], 'click', function() {
+        //   infowindow.open(map,markers[index]);
+        // }); 
       }
+    } 
   }
 
   document.getElementById('search_korean').addEventListener('click', function(event) {
