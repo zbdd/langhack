@@ -4,8 +4,16 @@
   var map_indoor;
   var markers = new Array();
   var marker = null;
+  var response;
+     $.ajax({
+      type:"GET", url:"search/load", data:{},
+      success: function(responses) {
+        response = responses;
+      }
+    });
 
   function displayMap(){
+    
     var initialLocation = new google.maps.LatLng(-31.953004,115.857469);
     
 
@@ -46,7 +54,10 @@
         }
   }                                                                                                    
 
-  function drawCircle(location, rad) { 
+  function drawCircle(location, rad, colour) { 
+    if(colour == null) {
+      colour = getRandomColor();
+    }
       markers.push(new google.maps.Circle({
           center: location,
           //icon: '../person.png',
@@ -55,7 +66,7 @@
           strokeOpacity: 0.7,
           strokeWeight: 2,
           //fillColor: "#76EE00",
-          fillColor: getRandomColor(),
+          fillColor: colour,
           fillOpacity: 0.35,
           map: map
       }));
@@ -93,22 +104,42 @@
 //#FF0000 CHINESE
 ////#33CC33 KOREAN
 //AUSSIE #0000FF
-  var index =0;
-
-  document.getElementById('search_korean').addEventListener('click', function(event) {
-    $.ajax({
-      type:"GET", url:"search/load", data:{},
-      success: function(response) {
-        console.log(response);
-        for(index = 0; index < response.length; index++) {
+  function loadUsers(toLoad) {
+    var index = 0;
+    var re;
+    if(toLoad == 'Korean') {
+      colour = '#33CC33';
+      re = new RegExp('Korean', 'g');
+    } else if (toLoad == 'Chinese') {
+      colour = '#FF0000';
+      re = new RegExp('Chinese', 'g');
+    } else if (toLoad == 'English') {
+      colour = '#0000FF';
+      re = new RegExp('English', 'g');
+    }
+    
+      for(index = 0; index < response.length; index++) {
+        if(response[index]['languages'].match(re)) {
           var location = new google.maps.LatLng(response[index]['latitude'], response[index]['longitude']);
-          drawCircle(location, 100);
+          drawCircle(location, 100, colour);
         }
       }
-    });
+  }
+
+  document.getElementById('search_korean').addEventListener('click', function(event) {
+    clearOverlays();
+    loadUsers('Korean');
+  });
+  document.getElementById('search_english').addEventListener('click', function(event) {
+    clearOverlays();
+    loadUsers('English');
+  });
+  document.getElementById('search_chinese').addEventListener('click', function(event) {
+    clearOverlays();
+    loadUsers('Chinese');
   });
 }
-  </script>
+</script>
   
 
  
@@ -117,8 +148,8 @@
     <p class="lead">Languages</p>
     <div class="list-group">
       <a href="#" id="search_korean" name="search_korean" class="list-group-item">Korean</a>
-      <a href="#" class="list-group-item">English</a>
-      <a href="#" class="list-group-item">Chinese</a>
+      <a href="#" id="search_english" name="search_english" class="list-group-item">English</a>
+      <a href="#" id="search_chinese" name="search_chinese" class="list-group-item">Chinese</a>
     </div>
   </div>
   <div class="col-md-9">
