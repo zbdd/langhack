@@ -53,14 +53,13 @@ class Authenticate extends CI_Controller {
 				if ($this->lh_authenticate->signup_login($oauth_user['email'])) {
 					redirect('/');
 				} else {
-					redirect('/err');
+					redirect('/');
 				}
 			} else {
 				// 프로필 사진 저장
 				$fb_img = file_get_contents('https://graph.facebook.com/'.$oauth_user['id'].'/picture?width=160&height=160');
 				$upload_path = $this->config->item('img_path');
-				// if (!is_really_writable($upload_path))
-				// 	mkdir($upload_path);
+				
 				$fb_file = $_SERVER['DOCUMENT_ROOT'].$upload_path .'/'. md5($oauth_user['id']) . '.jpg';
 				file_put_contents($fb_file, $fb_img);
 				// 회원가입 이어서 진행
@@ -74,67 +73,43 @@ class Authenticate extends CI_Controller {
 					'head_title'	=> 'Register',
 					'type'			=> 'oauth',
 					'userdata'		=> $userdata,
-					'no_profile'	=> '/static/img/avatar.png'
+					'no_profile'	=> '/static/img/avatar.jpg'
 				));
 				$this->lh_view->set_partial('body', 'modules/signup');
 				$this->lh_view->render();
 				return;
 			}
 		} else {
-			redirect('/blah2');
+			redirect('/');
 		}
 	}
 	
 	public function signup() {
 		if ($this->input->post()) {
-			// 타입
-			$this->load->model('Type_code_model');
-			$type_code_id = $this->Type_code_model->find_one(array('reference' => 'users', 'key' => $this->input->post('type_code_key')))->id;
-			// 비밀번호
+			// Password
 			if (!function_exists('password_hash')) $this->load->helper('password');
-			if ($this->input->post('type') === 'email') {
-				$hash = password_hash($this->input->post('password'), PASSWORD_BCRYPT);
-			} else {
-				$hash = password_hash(md5(time().rand()), PASSWORD_BCRYPT); // 소셜로그인은 비밀번호가 의미가 없고, 임시로 난수를 할당한다
-			}
-			// 과목선택
-			$subject_option = implode('|', array(
-				$this->input->post('subject-korean'),
-				$this->input->post('subject-math'),
-				$this->input->post('subject-english'),
-				$this->input->post('subject-select')
-			));
-			$description = ($this->input->post('description')) ? $this->input->post('description') : '';
-			$facebook_link = ($this->input->post('facebook_link')) ? $this->input->post('facebook_link') : '';
-    // $profile_image = str_replace('http://www.lh.net', '', $this->input->post('profile'));
-			$profile_image = str_replace($this->config->item('img_path').'/', '', $profile_image);
+			$hash = password_hash(md5(time().rand()), PASSWORD_BCRYPT); // 소셜로그인은 비밀번호가 의미가 없고, 임시로 난수를 할당한다
+			$profile_image = str_replace('/'.$this->config->item('img_path').'/', '', $this->input->post('user-profile'));
 			$userdata = array(
-				'type_code_id'	=> $type_code_id,
-				'email'			=> $this->input->post('email'),
+				'email'			=> $this->input->post('user-email'),
+				'profile' 		=> $profile_image,
+				'firstname'		=> $this->input->post('user-fname'),
+				'lastname' 		=> $this->input->post('user-lname'),
 				'password'		=> $hash,
-				'nickname'		=> $this->input->post('nickname'),
-				'mypage_url'	=> $this->input->post('mypage'),
-				'bio'			=> $this->input->post('bio'),
-				'status'		=> 'Y', // 'N'
-				// 메타데이터
-				'profile_image'	=> $profile_image,
-				'subject_option'=> $subject_option,
-				'auto_creation'	=> 'Y',
-				'description'	=> $description,
-				'facebook_link' => $facebook_link
+				'interest'		=> $this->input->post('user-interest'),
+				'native'		=> $this->input->post('user-native'),
+				'learn'			=> $this->input->post('user-learn')
 			);
 			
 			if ($this->lh_user->add($userdata)) {
-				// TODO send validation email
 				$this->lh_authenticate->signup_login($this->input->post('email'));
 				$results = array(
-					'result' => true,
-					'name' => $this->input->post('nickname')
+					'result' => true
 				);
 			} else {
 				$results = array(
 					'result' => false,
-					'message' => array('save' => '회원가입 중 문제가 발생했습니다. 다시 시도해 주세요.')
+					'message' => 'Failed to registration!'
 				);
 			}
 			$this->output->set_content_type('application/json');

@@ -22,8 +22,8 @@ $config['predefined'] = array(
 
 /* facebook app */
 $config['facebook'] = array(
-	'appId' => '587302078035307',
-	'secret' => '4461babb47df5e1a3b2e0b09b27ab6fb'
+	'appId' 	=> '587302078035307',
+	'secret' 	=> 'e1c6e80fe1f0fb3dcbf63590d97f3c7c'
 );
 
 /* points */

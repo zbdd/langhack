@@ -10,6 +10,7 @@
   <link href="<?php echo base_url('static/css/bootstrap.css'); ?>" rel="stylesheet">
   <!-- Add custom CSS here -->
   <link href="<?php echo base_url('static/css/common.css'); ?>" rel="stylesheet">
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 </head>
 <body>
 
@@ -26,7 +27,6 @@
   <!-- /.container -->
 
   <!-- JavaScript -->
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
   <script src="<?php echo base_url('static/js/bootstrap.min.js'); ?>"></script>
 
 </body>

@@ -24,7 +24,10 @@
       </ul>
       <ul class="nav navbar-nav navbar-right">
       <?php if ($this->lh_user->get('id')): ?>
-        <li class="dropdown">
+        <li>
+          <a href="#"><img src="<?php echo '/static/img/'.$this->lh_user->get('profile'); ?>" class="nav-profile"> <?php echo $this->lh_user->get('firstname'); ?></a>
+        </li>
+        <!-- <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <b class="caret"></b></a>
           <ul class="dropdown-menu">
             <li><a href="#">Action</a></li>
@@ -33,13 +36,10 @@
             <li class="divider"></li>
             <li><a href="#">Separated link</a></li>
           </ul>
-        </li>
+        </li> -->
       <?php else: ?>
         <li>
-          <button type="button" class="btn btn-primary navbar-btn">Sign Up With Facebook</button>
-        </li>
-        <li>
-          <a href="<?php echo base_url('signup'); ?>">Sign Up</a>
+          <button type="button" class="btn btn-primary navbar-btn btn-signup-fb">Sign Up With Facebook</button>
         </li>
       <?php endif; ?>
       </ul>
@@ -48,3 +48,11 @@
   </div>
   <!-- /.container -->
 </nav>
+<script type="text/javascript">
+$(document).ready(function() {
+  $('.btn-signup-fb').click(function(e) {
+    e.preventDefault();
+    window.location.href="/signup"
+  });
+});
+</script>

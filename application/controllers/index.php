@@ -12,6 +12,21 @@ class Index extends LH_Controller {
 	
 	public function index()
 	{
+		$users = array();
+		foreach($this->User_model->find() as $user) {
+            $user->profile = '/static/img/'.$user->profile;
+            switch ($user->native) {
+            	case 'Korean':	$user->background = 'white'; break;
+            	case 'English':	$user->background = 'blue'; break;
+            	case 'Chinese':	$user->background = 'red'; break;
+            	default:		$user->background = 'white'; break;
+            }
+            $users[] = $user;
+        }
+        $this->lh_view->set_value(array(
+            'head_title' => 'Home',
+            'users' => $users
+        ));
 		$this->lh_view->set_partial('body', 'main');
 		$this->lh_view->render();
 	}

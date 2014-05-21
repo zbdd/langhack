@@ -60,40 +60,39 @@ class Lh_authenticate {
 	public function login($email, $password) {
 		if ( (empty($email) || empty($password)) ) return false;
 		
-		if ($result = $this->CI->User_model->with('type_codes', 'type_code_id')->columns('users.*, type_codes.key AS type_code_key')->find_one(array('users.email' => $email, 'users.status' => 'Y'))) {
+		if ($result = $this->CI->User_model->find_one(array('email' => $email))) {
 			if (password_verify($password, $result->password)) {
-				$this->CI->odab_user->set(array(
+				$this->CI->lh_user->set(array(
 					'id'			=> $result->id,
-					'type_code_key'	=> $result->type_code_key,
 					'email' 		=> $result->email,
-					'nickname'		=> $result->nickname,
-					'bio'			=> $result->bio,
-					'mypage_url'	=> $result->mypage_url
+					'firstname'		=> $result->firstname,
+					'lastname'		=> $result->lastname,
+					'profile'		=> $result->profile
 				));
-				
 				// update last login time
 				$this->update_last_login($result->id);
 				return true;
 			} else {
-				//$this->CI->odab_user->set(array('id' => 1));
-				//$this->CI->odab_user->delete(array_keys(array('email', 'password')));
+				//$this->CI->lh_user->set(array('id' => 1));
+				//$this->CI->lh_user->delete(array_keys(array('email', 'password')));
 				return false;
 			}
 		} else {
-			//$this->CI->odab_user->set(array('id' => 1));
-			//$this->CI->odab_user->delete(array_keys(array('email', 'password')));
+			//$this->CI->lh_user->set(array('id' => 1));
+			//$this->CI->lh_user->delete(array_keys(array('email', 'password')));
 			return false;
 		}
 	}
 	
 	public function signup_login($email) {
 		if (empty($email)) return false;
-		if ($result = $this->CI->User_model->columns('users.*')->find_one(array('users.email' => $email))) {
-			$this->CI->odab_user->set(array(
+		if ($result = $this->CI->User_model->find_one(array('email' => $email))) {
+			$this->CI->lh_user->set(array(
 				'id'			=> $result->id,
 				'email' 		=> $result->email,
 				'firstname'		=> $result->firstname,
-				'lastname'		=> $result->lastname
+				'lastname'		=> $result->lastname,
+				'profile'		=> $result->profile
 			));
 			$this->update_last_login($result->id);
 			return true;
