@@ -10,8 +10,7 @@ class Search extends LH_Controller {
 		$this->lh_view->set_partial('footer', 'modules/footer');
 	}
 	
-	public function index()
-	{
+	public function index() {
 		$users = array();
 		foreach($this->User_model->find() as $user) {
             $user->profile = '/static/img/'.$user->profile;
@@ -32,6 +31,34 @@ class Search extends LH_Controller {
 		$this->lh_view->render();
 	}
 
+	public function load() {
+		$users = array();
+		foreach($this->User_model->find() as $user) {
+			$users[] = $user;
+		}
+
+		$this->output->set_content_type('application/json');
+		$this->output->set_output(json_encode($users));
+		return;
+	}
+
+	public function more($user_id = null) {
+		if (!empty($user_id) && $user = $this->User_model->find_one(array('id' => $user_id))) {
+			$user->profile = '/static/img/'.$user->profile;
+			$this->lh_view->set_value(array(
+				'userdata' => $user
+			));
+			$this->lh_view->set_partial('body', 'more');
+		} else {
+			$this->lh_view->set_partial('body', 'error');
+		}
+		$this->lh_view->render();
+	}
+
+	public function calendar() {
+		$this->lh_view->set_partial('body', 'calendar');
+		$this->lh_view->render();
+	}
 }
 
 /* End of file search.php */

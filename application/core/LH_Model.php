@@ -27,29 +27,7 @@ class LH_Model extends CI_Model {
 		if($this->db->field_exists('updated_at', $this->table)) {
 			$data['updated_at'] = $date;
 		}
-		
-		// if position exists
-/*		if($this->db->field_exists('position', $this->table)) {
-			if(isset($this->position)
-				&& !empty($this->position)) {
-				$sql = 'SELECT MAX(position) AS position FROM ' . $this->table . ' WHERE';
-				foreach($this->position as $position_scope) {
-					$sql .= ' ' . $position_scope . ' = ' . $data[$position_scope];
-				}
-			} else {
-				$sql = 'SELECT MAX(position) AS position FROM ' . $this->table;
-			}
-			
-			$result = $this->query($sql);
-						
-			if($result
-				&& $result->num_rows() > 0) {
-				$data['position'] = $result->row()->position + 1;
-			} else {
-				$data['position'] = 1;
-			}
-		}
-*/
+
 		if($this->db->insert($this->table, $data)) {
 			$insert_id = $this->db->insert_id();
 			return $insert_id;
@@ -73,11 +51,9 @@ class LH_Model extends CI_Model {
 		$date = date('Y-m-d H:i:s');
 
 		// if updated_at exists
-		//if(!array_key_exists('last_action_at',$data)): //최종 활동 기록 시간 수정시는 update 하지 않음
-			if($this->db->field_exists('updated_at', $this->table)) {
-				$data['updated_at'] = $date;
-			}
-		//endif;
+		if($this->db->field_exists('updated_at', $this->table)) {
+			$data['updated_at'] = $date;
+		}
 		
 		if($this->db->update($this->table, $data, $where)) {
 			return true;

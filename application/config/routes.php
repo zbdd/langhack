@@ -44,6 +44,7 @@ $route['404_override'] = '';
 $route['about'] = 'index/about';
 $route['signup'] = 'authenticate/signup';
 $route['login'] = 'authenticate/login';
+$route['logout'] = 'authenticate/logout';
 #$route['foo/(:any)/(:num)'] = 'bar/$1/$2';
 
 

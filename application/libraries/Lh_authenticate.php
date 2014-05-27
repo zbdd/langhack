@@ -10,43 +10,6 @@ class Lh_authenticate {
 		if (!function_exists('password_hash')) $this->CI->load->helper('password');
 	}
 	
-	public function m_login($email, $password) {
-		if ( (empty($email) || empty($password)) ) return false;
-		$this->CI->load->model('User_access_token_model');
-		if ($result = $this->CI->User_model->find_one(array('email' => $email, 'status' => 'Y'))) {
-			if (password_verify($password, $result->password)) {
-				$new_token = md5(uniqid($result->email, true));
-				if ($this->CI->User_access_token_model->is_exists(array('user_id' => $result->id))) {
-					$this->CI->User_access_token_model->update(array('access_token' => $new_token), array('user_id' => $result->id));
-				} else {
-					$this->CI->User_access_token_model->create(array('user_id' => $result->id, 'access_token' => $new_token));
-				}
-				$this->update_last_login($result->id);
-				return array('id' => $result->id, 'name' => $result->nickname, 'token' => $new_token);
-			} else {
-				return false;
-			}
-		} else {
-			return false;
-		}
-	}
-	public function m_oauth_login($email) {
-		if (empty($email)) return false;
-		$this->CI->load->model('User_access_token_model');
-		if ($result = $this->CI->User_model->find_one(array('email' => $email, 'status' => 'Y'))) {
-			$new_token = md5(uniqid($result->email, true));
-			if ($this->CI->User_access_token_model->is_exists(array('user_id' => $result->id))) {
-				$this->CI->User_access_token_model->update(array('access_token' => $new_token), array('user_id' => $result->id));
-			} else {
-				$this->CI->User_access_token_model->create(array('user_id' => $result->id, 'access_token' => $new_token));
-			}
-			$this->update_last_login($result->id);
-			return array('id' => $result->id, 'name' => $result->nickname, 'token' => $new_token);
-		} else {
-			return false;
-		}
-	}
-	
 	/**
 	 * 로그인 루틴
 	 * 
@@ -73,13 +36,9 @@ class Lh_authenticate {
 				$this->update_last_login($result->id);
 				return true;
 			} else {
-				//$this->CI->lh_user->set(array('id' => 1));
-				//$this->CI->lh_user->delete(array_keys(array('email', 'password')));
 				return false;
 			}
 		} else {
-			//$this->CI->lh_user->set(array('id' => 1));
-			//$this->CI->lh_user->delete(array_keys(array('email', 'password')));
 			return false;
 		}
 	}

@@ -69,9 +69,15 @@ footer {
   border-radius: 100%;
 }
 
+/*
+ *  Common
+ */
+.align-center {
+  text-align: center;
+}
 
 /*
- * Card
+ *  List - main
  */
 .item-1 {
   margin-bottom: 20px;
@@ -83,7 +89,6 @@ footer {
   -webkit-box-shadow: 0 0 3px#000;
   box-shadow: 0 0 3px #000;
 }
-
 .public-header {
     width: 100%;
     height: 120px;
@@ -92,7 +97,6 @@ footer {
     float:left;
     text-align: left;
 }
-
 .header-blue  {
   background: #1E90FF;
 }
@@ -102,7 +106,6 @@ footer {
 .header-white {
   background: #ACACAC;
 }
- 
 .public-header img {
     width:80px;
     height:80px;
@@ -112,12 +115,10 @@ footer {
     margin-top: 20px;
     margin-left: 20px;
     margin-right: 15px;
- 
     -moz-box-shadow: 0 0 3px #fff;
-        -webkit-box-shadow: 0 0 3px#fff;
-        box-shadow: 0 0 3px #fff;
-    }
- 
+    -webkit-box-shadow: 0 0 3px#fff;
+    box-shadow: 0 0 3px #fff;
+}
 .public-header h1 {
     font-size: 22px;
     color: #fff;
@@ -126,23 +127,19 @@ footer {
     font-family: 'Poiret One', cursive;
     font-weight: bold;
     margin-bottom: 5px;
-    }    
- 
+}    
 .public-header p {
     color: #fff;
     font-family: 'Open Sans', sans-serif;
-    }
- 
+}
 ul.list-style {
     margin: 0px;
     padding: 0px;
     width: 100%;
-    }
- 
+}
 ul.list-style li {
     list-style: none;
-    }
- 
+}
 ul.list-style li a {
     padding: 8px 20px;
     display: inline-block;
@@ -153,17 +150,81 @@ ul.list-style li a {
     border-top: 1px solid rgba(255, 255, 255, 1);
     border-bottom: 1px solid rgba(0, 0, 0, 0.1);
     transition: all 0.8s ease-in-out 0s;
-    }
- 
+}
 ul.list-style li a:hover {
     border-left: 5px solid #7BDCE5;
     background: #EAEAEA;
-    }
- 
+}
 ul.list-style li a:hover i {
     color: #64CCD6;
-    }
- 
+}
 ul.list-style li a i {
     margin-top: 3px;
-    }
+}
+
+/*
+ *  List - search
+ */
+.item-short {
+  border-bottom:1px solid #aaa;
+  margin: 0 0 10px 0;
+  padding-top:5px;
+}
+.item-short-border {
+  border:1px solid #aaa;
+  margin:0 0 15px;
+  padding-top:5px;
+  border-radius: 10px;
+}
+.short-left {
+  display:inline-block;
+  vertical-align: top;
+  width:25%;
+}
+.short-left img {
+  border-radius: 50%;
+  width: 80%;
+  margin-top:15px;
+}
+.short-name {
+  margin:5px 0;
+  line-height:100%;
+}
+.short-stars {
+  color: #DB7093;
+  letter-spacing: -2px;
+}
+.short-right {
+  display: inline-block;
+  vertical-align: top;
+  width: 70%;
+  padding-left: 3%;
+  overflow: hidden;
+}
+.short-table {
+
+}
+.short-table th.top,
+.short-table td.top {
+  border-top: none;
+}
+.short-table th {
+  width: 70px;
+}
+
+.cal-container {
+  position: relative;
+  padding-bottom: 120%;
+  padding-top: 30px;
+  height: 0;
+  overflow: auto;
+}
+.cal-container iframe,  
+.cal-container object, 
+.cal-container embed {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}

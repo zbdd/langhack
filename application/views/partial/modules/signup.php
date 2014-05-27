@@ -1,7 +1,7 @@
 <form class="form-horizontal signup" role="form">
   <div class="form-group">
     <label for="profile" class="col-sm-2 control-label">Profile</label>
-    <div class="col-sm-10 ">
+    <div class="col-sm-10 align-center">
       <input type="hidden" name="user-profile" value="">
       <img src="/<?php echo $userdata['user_profile']; ?>" alt="profile" class="user-profile">
     </div>
@@ -15,13 +15,13 @@
   <div class="form-group">
     <label for="first-name" class="col-sm-2 control-label">First Name</label>
     <div class="col-sm-10">
-      <input type="text" class="form-control" name="user-fname" id="user-fname" placeholder="First Name" value="<?php echo $userdata['user_fname']; ?>">
+      <input type="text" class="form-control" name="user-fname" id="user-fname" placeholder="First Name" value="<?php //echo $userdata['user_fname']; ?>">
     </div>
   </div>
   <div class="form-group">
     <label for="last-name" class="col-sm-2 control-label">Last Name</label>
     <div class="col-sm-10">
-      <input type="text" class="form-control" name="user-lname" id="user-lname" placeholder="Last Name" value="<?php echo $userdata['user_lname']; ?>">
+      <input type="text" class="form-control" name="user-lname" id="user-lname" placeholder="Last Name" value="<?php //echo $userdata['user_lname']; ?>">
     </div>
   </div>
   <div class="form-group">
@@ -31,7 +31,7 @@
       <select class="form-control form-native">
         <option>Korean</option>
         <option>English</option>
-        <option>Chineses</option>
+        <option>Chinese</option>
         <option>Japanese</option>
         <option>Other</option>
       </select>
@@ -44,7 +44,7 @@
       <select class="form-control form-learn">
         <option>Korean</option>
         <option>English</option>
-        <option>Chineses</option>
+        <option>Chinese</option>
         <option>Japanese</option>
         <option>Other</option>
       </select>
