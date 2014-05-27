@@ -77,6 +77,38 @@ footer {
 }
 
 /*
+ *  About
+ */
+.about-container {
+  text-align:center;
+}
+.about {
+  max-width: 800px;
+  width: 100%;
+  margin: 0 auto;
+}
+.about-caption {
+  margin: 15px 0 30px;
+  font-size: 16px;
+  color: #676767;
+}
+.sep {
+  color:#ddd;
+  margin:0 10px;
+}
+.about-desc {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: left;
+  font-size: 18px;
+  line-height: 160%;
+}
+.about-desc p {
+  margin-bottom: 20px;
+}
+
+/*
  *  List - main
  */
 .item-1 {
